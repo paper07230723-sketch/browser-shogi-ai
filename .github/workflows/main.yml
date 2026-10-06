@@ -31,6 +31,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Check YaneuraOu files
+        run: |
+          echo "=== YaneuraOu package ==="
+          find node_modules/@mizarjp/yaneuraou.halfkp -maxdepth 3 -type f | sort
       - name: Copy YaneuraOu WASM
         run: cp node_modules/@mizarjp/yaneuraou.halfkp/lib/yaneuraou.halfkp.wasm public/yaneuraou.halfkp.wasm
       - name: Build
