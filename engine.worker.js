@@ -1,4 +1,4 @@
-import YaneuraOu_HalfKP from "@mizarjp/yaneuraou.halfkp";
+import YaneuraOu_HalfKP from "@mizarjp/yaneuraou.halfkp.noeval";
 
 let engine = null;
 
