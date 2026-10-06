@@ -12,7 +12,7 @@ const strategyBook={
  "村田システム":["7g7f","3c3d","6i7h","8c8d","7h6h","4a3b"]
 };
 
-let record=new Record(InitialPositionSFEN.STANDARD);
+let record=new Record();
 let selected=null, targets=[], selectedHand=null;
 let worker=null, engineReady=false, thinking=false, engineStarted=false;
 let evalText="—", pvText="—", resultText="";
@@ -90,7 +90,7 @@ function render(){
  }
  renderHands();
  $("eval").textContent=evalText;$("pv").textContent=pvText;
- const r=new Record(record.initialPosition.sfen), lines=[];let ply=0;
+ const r=new Record(record.initialPosition), lines=[];let ply=0;
  while(r.goForward()){ply++;lines.push(`${ply}. ${r.current.displayText}`)}
  $("moves").textContent=lines.join("\n");
  $("status").textContent=thinking?"AI思考中…":(resultText||(!engineReady?"AI準備中…":(isMyTurn()?"あなたの手番":"AIの手番")));
@@ -133,7 +133,7 @@ function aiMove(){
 }
 
 function newGame(){
- record=new Record(InitialPositionSFEN.STANDARD);selected=null;targets=[];selectedHand=null;thinking=false;evalText="—";pvText="—";resultText="";render();
+ record=new Record();selected=null;targets=[];selectedHand=null;thinking=false;evalText="—";pvText="—";resultText="";render();
  if(!isMyTurn())setTimeout(aiMove,250);
 }
 
