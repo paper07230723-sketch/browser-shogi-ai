@@ -174,7 +174,9 @@ worker.onmessage=e=>{
   thinking=false;
   resultText="AI初期化エラー: "+(m.error || "原因不明");
   render();
-  console.error(m.error);
+  console.error("AI error:",m.error);
+  console.error("name:",m.name);
+  console.error("stack:",m.stack);
   return;
 }
  if(m.type!=="line")return;
