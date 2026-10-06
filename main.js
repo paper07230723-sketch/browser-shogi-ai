@@ -177,7 +177,6 @@ worker.onerror = (e) => {
 };
 
 worker.onmessage=e=>{
-  worker.onmessage=e=>{
   const m=e.data;
 
   if(m.type==="error"){
