@@ -1,4 +1,4 @@
-import YaneuraOu_K_P from "@mizarjp/yaneuraou.k-p";
+import YaneuraOu_HalfKP from "@mizarjp/yaneuraou.halfkp";
 
 let engine = null;
 
@@ -7,14 +7,14 @@ self.onmessage = async (e) => {
 
   if (m.type === "init") {
     try {
-      engine = await YaneuraOu_K_P({
-        locateFile: (path) => {
-          if (path.endsWith(".wasm")) {
-            return new URL("../yaneuraou.k-p.wasm", import.meta.url).href;
-          }
-          return path;
-        }
-      });
+engine = await YaneuraOu_HalfKP({
+  locateFile: (path) => {
+    if (path.endsWith(".wasm")) {
+      return new URL("../yaneuraou.halfkp.wasm", import.meta.url).href;
+    }
+    return path;
+  }
+});
 
       engine.addMessageListener(line =>
         self.postMessage({ type: "line", line })
