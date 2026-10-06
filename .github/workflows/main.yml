@@ -35,7 +35,12 @@ jobs:
         run: |
           echo "=== YaneuraOu package ==="
           find node_modules/@mizarjp/yaneuraou.halfkp -maxdepth 3 -type f | sort
-      
+
+      - name: Copy YaneuraOu WASM
+        run: |
+          mkdir -p public
+          cp node_modules/@mizarjp/yaneuraou.halfkp.noeval/lib/yaneuraou.halfkp.noeval.wasm public/yaneuraou.halfkp.noeval.wasm
+
       - name: Build
         run: npm run build
 
