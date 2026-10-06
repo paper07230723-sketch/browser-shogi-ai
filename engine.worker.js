@@ -10,7 +10,7 @@ self.onmessage = async (e) => {
 engine = await YaneuraOu_HalfKP({
   locateFile: (path) => {
     if (path.endsWith(".wasm")) {
-      return new URL("../yaneuraou.halfkp.noeval.wasm", import.meta.url).href;
+      return `${import.meta.env.BASE_URL}yaneuraou.halfkp.noeval.wasm`;
     }
     return path;
   }
