@@ -168,12 +168,17 @@ $("file").onchange=async e=>{
 };
 
 worker=new Worker(new URL("./engine.worker.js",import.meta.url),{type:"module"});
-worker.onmessage=e=>{
- const m=e.data;
- if(m.type==="error"){
-  thinking=false;
-  resultText="AI初期化エラー: "+(m.error || "原因不明");
+
+worker=new Worker(new URL("./engine.worker.js",import.meta.url),{type:"module"});
+
+worker.onerror = (e) => {
+  console.error("Worker error:", e);
+  resultText = "Workerエラー: " + (e.message || "詳細不明");
+  thinking = false;
   render();
+};
+
+worker.onmessage=e=>{
   console.error("AI error:",m.error);
   console.error("name:",m.name);
   console.error("stack:",m.stack);
