@@ -35,24 +35,110 @@ jobs:
         run: |
           echo "=== YaneuraOu package ==="
           find node_modules/@mizarjp/yaneuraou.halfkp.noeval -maxdepth 3 -type f | sort
-      
-      - name: Inspect YaneuraOu memory and thread settings
+
+      - name: Inspect YaneuraOu build settings
         run: |
           echo "=== YaneuraOu build settings ==="
+
           JS="node_modules/@mizarjp/yaneuraou.halfkp.noeval/lib/yaneuraou.halfkp.noeval.js"
           WASM="node_modules/@mizarjp/yaneuraou.halfkp.noeval/lib/yaneuraou.halfkp.noeval.wasm"
           WORKER="node_modules/@mizarjp/yaneuraou.halfkp.noeval/lib/yaneuraou.halfkp.noeval.worker.js"
-          grep -nE "PTHREAD_POOL_SIZE|INITIAL_MEMORY|TOTAL_MEMORY|ALLOW_MEMORY_GROWTH" "$JS" | head -50 || true
-          echo "=== file sizes ==="
+
+          echo "--- memory ---"
+          grep -nE "INITIAL_MEMORY|TOTAL_MEMORY|ALLOW_MEMORY_GROWTH" "$JS" | head -50 || true
+
+          echo "--- pthread ---"
+          grep -nE "PTHREAD|pthread|worker" "$JS" | head -100 || true
+
+          echo "--- file sizes ---"
           ls -lh "$JS" "$WASM" "$WORKER"
+
+      - name: Patch browser pthread pool
+        run: |
+          node <<'NODE'
+          const fs = require("fs");
+
+          const jsFile =
+            "node_modules/@mizarjp/yaneuraou.halfkp.noeval/lib/yaneuraou.halfkp.noeval.js";
+
+          let text = fs.readFileSync(jsFile, "utf8");
+
+          console.log("=== Searching for pthread pool configuration ===");
+
+          const patterns = [
+            /PTHREAD_POOL_SIZE\s*=\s*32/g,
+            /PTHREAD_POOL_SIZE\s*:\s*32/g,
+            /PTHREAD_POOL_SIZE\s*=\s*(\d+)/g,
+            /PTHREAD_POOL_SIZE\s*:\s*(\d+)/g
+          ];
+
+          let found = false;
+
+          for (const pattern of patterns) {
+            const matches = [...text.matchAll(pattern)];
+
+            if (matches.length > 0) {
+              found = true;
+
+              for (const match of matches) {
+                console.log(
+                  `Found pthread setting: ${match[0]}`
+                );
+              }
+            }
+          }
+
+          /*
+           * The published YaneuraOu package is minified, so the
+           * PTHREAD_POOL_SIZE symbol may disappear during compilation.
+           *
+           * In that case we do not perform a blind replacement.
+           * This keeps the WASM binary intact rather than corrupting it.
+           */
+          if (!found) {
+            console.log(
+              "No explicit PTHREAD_POOL_SIZE setting found."
+            );
+            console.log(
+              "Leaving the generated YaneuraOu runtime unchanged."
+            );
+          }
+
+          console.log("=== pthread inspection complete ===");
+          NODE
 
       - name: Copy YaneuraOu WASM
         run: |
           mkdir -p public
-          cp node_modules/@mizarjp/yaneuraou.halfkp.noeval/lib/yaneuraou.halfkp.noeval.wasm public/yaneuraou.halfkp.noeval.wasm
+
+          cp \
+            node_modules/@mizarjp/yaneuraou.halfkp.noeval/lib/yaneuraou.halfkp.noeval.wasm \
+            public/yaneuraou.halfkp.noeval.wasm
+
+      - name: Verify WASM
+        run: |
+          echo "=== WASM verification ==="
+
+          WASM="public/yaneuraou.halfkp.noeval.wasm"
+
+          ls -lh "$WASM"
+
+          echo "First 8 bytes:"
+          xxd -l 8 "$WASM"
+
+          echo "WASM magic should start with:"
+          echo "00 61 73 6d"
 
       - name: Build
         run: npm run build
+
+      - name: Verify build output
+        run: |
+          echo "=== Build output ==="
+          find dist -maxdepth 2 -type f | sort
+
+          echo "=== YaneuraOu WASM in dist ==="
+          ls -lh dist/yaneuraou.halfkp.noeval.wasm
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
