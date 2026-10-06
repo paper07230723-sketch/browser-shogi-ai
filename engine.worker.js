@@ -11,7 +11,7 @@ engine = await YaneuraOu_HalfKP({
   locateFile: (path) => {
     if (path.endsWith(".wasm")) {
   return `${import.meta.env.BASE_URL}yaneuraou.halfkp.noeval.wasm`;
-}
+    }
     return path;
   }
 });
