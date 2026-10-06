@@ -53,6 +53,17 @@ window.addEventListener("unhandledrejection",function(e){
   <div id="boot">将棋AIを読み込んでいます…</div>
 </div>
 
-<script type="module" src="./main.js"></script>
+<script type="module">
+document.getElementById("app").innerHTML =
+  '<div style="padding:30px;color:white;font-size:20px">HTMLとJavaScriptの読み込みを確認中…</div>';
+
+import("./main.js").catch(function(e){
+  document.getElementById("app").innerHTML =
+    '<pre style="padding:30px;color:#ff8080;white-space:pre-wrap">' +
+    'main.js 読み込みエラー\n\n' +
+    (e.stack || e.message || e) +
+    '</pre>';
+});
+</script>
 </body>
 </html>
