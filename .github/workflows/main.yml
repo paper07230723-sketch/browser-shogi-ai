@@ -35,6 +35,16 @@ jobs:
         run: |
           echo "=== YaneuraOu package ==="
           find node_modules/@mizarjp/yaneuraou.halfkp.noeval -maxdepth 3 -type f | sort
+      
+      - name: Inspect YaneuraOu memory and thread settings
+        run: |
+          echo "=== YaneuraOu build settings ==="
+          JS="node_modules/@mizarjp/yaneuraou.halfkp.noeval/lib/yaneuraou.halfkp.noeval.js"
+          WASM="node_modules/@mizarjp/yaneuraou.halfkp.noeval/lib/yaneuraou.halfkp.noeval.wasm"
+          WORKER="node_modules/@mizarjp/yaneuraou.halfkp.noeval/lib/yaneuraou.halfkp.noeval.worker.js"
+          grep -nE "PTHREAD_POOL_SIZE|INITIAL_MEMORY|TOTAL_MEMORY|ALLOW_MEMORY_GROWTH" "$JS" | head -50 || true
+          echo "=== file sizes ==="
+          ls -lh "$JS" "$WASM" "$WORKER"
 
       - name: Copy YaneuraOu WASM
         run: |
