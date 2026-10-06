@@ -21,14 +21,15 @@ engine = await YaneuraOu_HalfKP({
       );
 
       engine.postMessage("usi");
-        } catch (err) {
-      self.postMessage({
-        type: "error",
-        error: err?.message || String(err),
-        stack: err?.stack || "",
-        name: err?.name || ""
-      });
-    }
+} catch (err) {
+  self.postMessage({
+    type: "error",
+    error: String(err),
+    stack: err?.stack || "",
+    name: err?.name || "",
+    detail: JSON.stringify(err, Object.getOwnPropertyNames(err))
+  });
+}
     return;
   }
 
