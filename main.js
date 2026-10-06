@@ -169,8 +169,6 @@ $("file").onchange=async e=>{
 
 worker=new Worker(new URL("./engine.worker.js",import.meta.url),{type:"module"});
 
-worker=new Worker(new URL("./engine.worker.js",import.meta.url),{type:"module"});
-
 worker.onerror = (e) => {
   console.error("Worker error:", e);
   resultText = "Workerエラー: " + (e.message || "詳細不明");
@@ -179,22 +177,63 @@ worker.onerror = (e) => {
 };
 
 worker.onmessage=e=>{
-  console.error("AI error:",m.error);
-  console.error("name:",m.name);
-  console.error("stack:",m.stack);
-  return;
-}
- if(m.type!=="line")return;
- const line=m.line;
- if(line==="usiok"){worker.postMessage({type:"command",command:"setoption name USI_Ponder value false"});worker.postMessage({type:"command",command:"isready"});return}
- if(line==="readyok"){engineReady=true;render();if(!isMyTurn())setTimeout(aiMove,150);return}
- if(line.startsWith("info ")){
-  const cp=line.match(/score cp (-?\d+)/);if(cp){let v=Number(cp[1])/100;if(record.position.color===Color.WHITE)v=-v;evalText=(v>=0?"+":"")+v.toFixed(2)}
-  const pv=line.match(/\spv (.+)$/);if(pv)pvText=pv[1];render();return
- }
- if(line.startsWith("bestmove ")){
-  const u=line.split(/\s+/)[1];thinking=false;if(u&&u!=="0000")play(u);else render();
- }
+  worker.onmessage=e=>{
+  const m=e.data;
+
+  if(m.type==="error"){
+    thinking=false;
+    resultText="AI初期化エラー: "+(m.error||"原因不明");
+    render();
+    console.error(m.error);
+    console.error(m.stack);
+    return;
+  }
+
+  if(m.type!=="line")return;
+
+  const line=m.line;
+
+  if(line==="usiok"){
+    worker.postMessage({
+      type:"command",
+      command:"setoption name USI_Ponder value false"
+    });
+    worker.postMessage({
+      type:"command",
+      command:"isready"
+    });
+    return;
+  }
+
+  if(line==="readyok"){
+    engineReady=true;
+    render();
+    if(!isMyTurn())setTimeout(aiMove,150);
+    return;
+  }
+
+  if(line.startsWith("info ")){
+    const cp=line.match(/score cp (-?\d+)/);
+    if(cp){
+      let v=Number(cp[1])/100;
+      if(record.position.color===Color.WHITE)v=-v;
+      evalText=(v>=0?"+":"")+v.toFixed(2);
+    }
+
+    const pv=line.match(/\spv (.+)$/);
+    if(pv)pvText=pv[1];
+
+    render();
+    return;
+  }
+
+  if(line.startsWith("bestmove ")){
+    const u=line.split(/\s+/)[1];
+    thinking=false;
+
+    if(u&&u!=="0000")play(u);
+    else render();
+  }
 };
 worker.postMessage({type:"init"});
 render();
