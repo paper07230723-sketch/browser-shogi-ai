@@ -32,8 +32,7 @@ jobs:
         run: npm install
 
       - name: Copy YaneuraOu WASM
-        run: cp node_modules/@mizarjp/yaneuraou.k-p/lib/yaneuraou.k-p.wasm public/yaneuraou.k-p.wasm
-
+        run: cp node_modules/@mizarjp/yaneuraou.halfkp/lib/yaneuraou.halfkp.wasm public/yaneuraou.halfkp.wasm
       - name: Build
         run: npm run build
 
