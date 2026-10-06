@@ -60,8 +60,9 @@ document.getElementById("app").innerHTML =
 import("./main.js").catch(function(e){
   document.getElementById("app").innerHTML =
     '<pre style="padding:30px;color:#ff8080;white-space:pre-wrap">' +
-    'main.js 読み込みエラー\n\n' +
-    (e.stack || e.message || e) +
+   'エラー名: ' + (e.name || '不明') + '\n' +
+'内容: ' + (e.message || String(e)) + '\n\n' +
+'詳細:\n' + (e.stack || '詳細なし') +
     '</pre>';
 });
 </script>
