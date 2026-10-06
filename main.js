@@ -170,7 +170,13 @@ $("file").onchange=async e=>{
 worker=new Worker(new URL("./engine.worker.js",import.meta.url),{type:"module"});
 worker.onmessage=e=>{
  const m=e.data;
- if(m.type==="error"){thinking=false;resultText="AI初期化エラー";render();console.error(m.error);return}
+ if(m.type==="error"){
+  thinking=false;
+  resultText="AI初期化エラー: "+(m.error || "原因不明");
+  render();
+  console.error(m.error);
+  return;
+}
  if(m.type!=="line")return;
  const line=m.line;
  if(line==="usiok"){worker.postMessage({type:"command",command:"setoption name USI_Ponder value false"});worker.postMessage({type:"command",command:"isready"});return}
