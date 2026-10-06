@@ -34,7 +34,7 @@ jobs:
       - name: Check YaneuraOu files
         run: |
           echo "=== YaneuraOu package ==="
-          find node_modules/@mizarjp/yaneuraou.halfkp -maxdepth 3 -type f | sort
+          find node_modules/@mizarjp/yaneuraou.halfkp.noeval -maxdepth 3 -type f | sort
 
       - name: Copy YaneuraOu WASM
         run: |
